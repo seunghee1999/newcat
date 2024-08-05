@@ -5,15 +5,100 @@ document.addEventListener('DOMContentLoaded', () => {
     const postForm = document.getElementById('post-form');
     const submitPostButton = document.getElementById('submit-post');
     const postList = document.getElementById('post-list');
-    const posts = JSON.parse(localStorage.getItem('posts')) || [];
+    const mainTopicsList = document.getElementById('main-topics');
+    const dailyBestList = document.getElementById('daily-best');
+    const weeklyBestList = document.getElementById('weekly-best');
+    const monthlyBestList = document.getElementById('monthly-best');
     const opinionsDiv = document.getElementById('opinions');
     const opinionText = document.getElementById('opinion-text');
     const submitOpinionButton = document.getElementById('submit-opinion');
     const topicDetailSection = document.getElementById('topic-detail');
     const topicTitleElement = document.getElementById('topic-title');
     const backToHomeButton = document.getElementById('back-to-home');
-    const userOpinions = {}; // 주제 글에 대한 반응 저장
-    const userCommentOpinions = {}; // 댓글에 대한 반응 저장
+    const posts = JSON.parse(localStorage.getItem('posts')) || [];
+    const topics = JSON.parse(localStorage.getItem('topics')) || [];
+    const userOpinions = {};
+    const userCommentOpinions = {};
+    const userId = 'user123'; // 사용자 ID (예: 로그인 후 사용자의 ID)
+    const userNickname = 'nickname'; // 사용자 닉네임
+    const dailyPostLimit = 5; // 하루
+
+    // 초기화
+    function init() {
+        resetDailyPostCount();
+        loadMainTopics();
+        loadBestTopics();
+        loadFreeBoardPosts();
+    }
+
+    // 하루마다 작성한 글 수 초기화
+    function resetDailyPostCount() {
+        const today = new Date().toISOString().slice(0, 10);
+        const userDailyPosts = JSON.parse(localStorage.getItem('userDailyPosts')) || {};
+        if (!userDailyPosts[userId] || userDailyPosts[userId].date !== today) {
+            userDailyPosts[userId] = { date: today, count: 0 };
+            localStorage.setItem('userDailyPosts', JSON.stringify(userDailyPosts));
+        }
+    }
+
+    // 메인 주제 로드
+    function loadMainTopics() {
+        const mainTopics = topics.filter(topic => topic.isMain);
+        mainTopicsList.innerHTML = '';
+        mainTopics.forEach(topic => {
+            const topicElement = createTopicElement(topic);
+            mainTopicsList.appendChild(topicElement);
+        });
+    }
+
+    // 베스트 토픽 로드
+    function loadBestTopics() {
+        const now = new Date();
+        const dailyBest = topics.filter(topic => {
+            const timeDiff = Math.abs(now - new Date(topic.timestamp));
+            const diffDays = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+            return diffDays <= 1;
+        }).slice(0, 5);
+
+        const weeklyBest = topics.filter(topic => {
+            const timeDiff = Math.abs(now - new Date(topic.timestamp));
+            const diffDays = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+            return diffDays > 1 && diffDays <= 7;
+        }).slice(0, 5);
+
+        const monthlyBest = topics.filter(topic => {
+            const timeDiff = Math.abs(now - new Date(topic.timestamp));
+            const diffDays = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+            return diffDays > 7 && diffDays <= 30;
+        }).slice(0, 5);
+
+        dailyBestList.innerHTML = '';
+        dailyBest.forEach(topic => {
+            const topicElement = createTopicElement(topic);
+            dailyBestList.appendChild(topicElement);
+        });
+
+        weeklyBestList.innerHTML = '';
+        weeklyBest.forEach(topic => {
+            const topicElement = createTopicElement(topic);
+            weeklyBestList.appendChild(topicElement);
+        });
+
+        monthlyBestList.innerHTML = '';
+        monthlyBest.forEach(topic => {
+            const topicElement = createTopicElement(topic);
+            monthlyBestList.appendChild(topicElement);
+        });
+    }
+
+    // 자유게시판 로드
+    function loadFreeBoardPosts() {
+        postList.innerHTML = '';
+        posts.forEach(post => {
+            const postElement = createPostElement(post);
+            postList.appendChild(postElement);
+        });
+    }
 
     // 홈 링크를 클릭하면 홈 섹션을 보여줌
     homeLink.addEventListener('click', (event) => {
@@ -35,12 +120,6 @@ document.addEventListener('DOMContentLoaded', () => {
         postForm.style.display = postForm.style.display === 'none' ? 'block' : 'none';
     });
 
-    // 기존 게시글 로드
-    posts.forEach(post => {
-        const postElement = createPostElement(post);
-        postList.appendChild(postElement);
-    });
-
     // 글 등록 기능
     submitPostButton.addEventListener('click', () => {
         const postTitle = document.getElementById('post-title').value.trim();
@@ -50,9 +129,17 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        const userDailyPosts = JSON.parse(localStorage.getItem('userDailyPosts')) || {};
+        if (userDailyPosts[userId].count >= dailyPostLimit) {
+            alert('하루에 작성할 수 있는 글 수를 초과했습니다.');
+            return;
+        }
+
         const newPost = {
             id: `post${posts.length + 1}`,
             title: postTitle,
+            authorId: userId,
+            authorNickname: userNickname,
             views: 0,
             likes: 0,
             dislikes: 0,
@@ -67,8 +154,25 @@ document.addEventListener('DOMContentLoaded', () => {
         postList.appendChild(postElement);
         postForm.style.display = 'none';
         document.getElementById('post-title').value = '';
+        
+        // 작성한 글 수 증가
+        userDailyPosts[userId].count += 1;
+        localStorage.setItem('userDailyPosts', JSON.stringify(userDailyPosts));
+
         updateBestPosts();
     });
+
+    // 주제 요소 생성
+    function createTopicElement(topic) {
+        const listItem = document.createElement('li');
+        listItem.innerHTML = `<a href="#">${topic.title}</a>`;
+
+        listItem.addEventListener('click', () => {
+            viewTopicDetail(topic);
+        });
+
+        return listItem;
+    }
 
     // 글 요소 생성
     function createPostElement(post) {
@@ -78,6 +182,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         postElement.innerHTML = `
             <h4>${post.title}</h4>
+            <p>작성자: ${post.authorNickname}</p>
             <span class="views">Views: ${post.views}</span>
             <button class="like-button">👍 좋아요</button>
             <button class="dislike-button">👎 싫어요</button>
@@ -90,11 +195,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const likeCount = postElement.querySelector('.like-count');
         const dislikeCount = postElement.querySelector('.dislike-count');
 
-        likeButton.addEventListener('click', () => {
+        likeButton.addEventListener('click', (event) => {
+            event.stopPropagation(); // 부모 요소로의 클릭 이벤트 전파를 막음
             toggleReaction(post, likeCount, 'like');
         });
 
-        dislikeButton.addEventListener('click', () => {
+        dislikeButton.addEventListener('click', (event) => {
+            event.stopPropagation(); // 부모 요소로의 클릭 이벤트 전파를 막음
             toggleReaction(post, dislikeCount, 'dislike');
         });
 
@@ -161,7 +268,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (!post) return;
 
-        const newComment = { text: opinionValue, likes: 0, dislikes: 0 };
+        const newComment = {
+            text: opinionValue,
+            authorId: userId,
+            authorNickname: userNickname,
+            likes: 0,
+            dislikes: 0,
+        };
+
         post.comments.push(newComment);
         localStorage.setItem('posts', JSON.stringify(posts)); // 업데이트된 데이터를 저장
 
@@ -178,6 +292,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         opinionElement.innerHTML = `
             <p>${comment.text}</p>
+            <p>작성자: ${comment.authorNickname}</p>
             <button class="like-button">👍 좋아요</button>
             <button class="dislike-button">👎 싫어요</button>
             <span class="like-count">${comment.likes}</span> | 
@@ -227,69 +342,5 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('posts', JSON.stringify(posts)); // 업데이트된 데이터를 저장
     }
 
-    // 베스트 게시글 업데이트
-    function updateBestPosts() {
-        const sortedPosts = posts.sort((a, b) => (b.likes + b.comments.length) - (a.likes + a.comments.length));
-        const now = new Date();
-
-        // 일간 베스트
-        const dailyBest = sortedPosts.filter(post => {
-            const timeDiff = Math.abs(now - new Date(post.timestamp));
-            const diffDays = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
-            return diffDays <= 1;
-        }).slice(0, 5);
-
-        const dailyBestDiv = document.getElementById('daily-best');
-        dailyBestDiv.innerHTML = '';
-        dailyBest.forEach(post => {
-            const postElement = createPostListElement(post);
-            dailyBestDiv.appendChild(postElement);
-        });
-
-        // 주간 베스트
-        const weeklyBest = sortedPosts.filter(post => {
-            const timeDiff = Math.abs(now - new Date(post.timestamp));
-            const diffDays = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
-            return diffDays > 1 && diffDays <= 7;
-        }).slice(0, 5);
-
-        const weeklyBestDiv = document.getElementById('weekly-best');
-        weeklyBestDiv.innerHTML = '';
-        weeklyBest.forEach(post => {
-            const postElement = createPostListElement(post);
-            weeklyBestDiv.appendChild(postElement);
-        });
-
-        // 월간 베스트
-        const monthlyBest = sortedPosts.filter(post => {
-            const timeDiff = Math.abs(now - new Date(post.timestamp));
-            const diffDays = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
-            return diffDays > 7 && diffDays <= 30;
-        }).slice(0, 5);
-
-        const monthlyBestDiv = document.getElementById('monthly-best');
-        monthlyBestDiv.innerHTML = '';
-        monthlyBest.forEach(post => {
-            const postElement = createPostListElement(post);
-            monthlyBestDiv.appendChild(postElement);
-        });
-    }
-
-    // 게시글 목록 요소 생성
-    function createPostListElement(post) {
-        const listItem = document.createElement('li');
-        listItem.innerHTML = `<a href="#">${post.title}</a>`;
-
-        listItem.addEventListener('click', () => {
-            viewTopicDetail(post);
-        });
-
-        return listItem;
-    }
-
-    // 홈으로 돌아가기
-    backToHomeButton.addEventListener('click', () => {
-        document.getElementById('home').style.display = 'block';
-        topicDetailSection.style.display = 'none';
-    });
+    init();
 });
