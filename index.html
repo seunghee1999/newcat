@@ -3,38 +3,95 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>오늘의 주제 커뮤니티 홈페이지</title>
+    <title>커뮤니티 홈페이지</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header>
-        <h1>Writing Cat's Community</h1>
+        <h1 class="highlight"><a href="#home" id="home-link">오늘의 주제: Writing Cat's Community</a></h1>
         <nav>
             <ul>
                 <li><a href="#home">Home</a></li>
-                <li><a href="#posts">Posts</a></li>
-                <li><a href="#about">About</a></li>
-                <li><a href="#contact">Contact</a></li>
+                <li><a href="#topics">Topics</a></li>
+                <li><a href="#free-board">자유게시판</a></li>
+                <li><a href="#login">Login</a></li>
+                <li><a href="#signup">Sign Up</a></li>
             </ul>
         </nav>
     </header>
     <main>
+        <!-- 메인 페이지 -->
         <section id="home">
-            <h2>Today's Topic</h2>
-            <p>Join the discussion on today's hottest topic!</p>
+            <h2>Today's Hot Topics</h2>
+            <p>Join the discussion on today's hottest topics and share your thoughts!</p>
+            
+            <!-- 베스트 섹션 -->
+            <div class="best-sections">
+                <div class="best-section">
+                    <h3>일간 베스트</h3>
+                    <ol class="best-list" id="daily-best">
+                        <!-- 일간 베스트 항목이 여기 추가됩니다 -->
+                    </ol>
+                </div>
+
+                <div class="best-section">
+                    <h3>주간 베스트</h3>
+                    <ol class="best-list" id="weekly-best">
+                        <!-- 주간 베스트 항목이 여기 추가됩니다 -->
+                    </ol>
+                </div>
+
+                <div class="best-section">
+                    <h3>월간 베스트</h3>
+                    <ol class="best-list" id="monthly-best">
+                        <!-- 월간 베스트 항목이 여기 추가됩니다 -->
+                    </ol>
+                </div>
+            </div>
         </section>
 
-        <section id="posts">
-            <h2>Recent Posts</h2>
-            <ul>
-                <li><a href="#">Post 1</a></li>
-                <li><a href="#">Post 2</a></li>
-                <li><a href="#">Post 3</a></li>
-            </ul>
+        <!-- 자유게시판 -->
+        <section id="free-board" class="large-board">
+            <h2>자유게시판</h2>
+            <button id="new-post-button">글 쓰기</button>
+
+            <!-- 글쓰기 폼 -->
+            <div id="post-form" style="display: none;">
+                <h3>새 글 작성</h3>
+                <label for="post-title">제목:</label>
+                <input type="text" id="post-title" required>
+                <button id="submit-post">등록</button>
+            </div>
+
+            <!-- 게시글 목록 -->
+            <div id="post-list">
+                <!-- 게시글 카드가 여기에 추가됩니다 -->
+            </div>
+        </section>
+
+        <!-- 주제 상세 페이지 -->
+        <section id="topic-detail" style="display: none;">
+            <h2 id="topic-title"></h2>
+            <button id="back-to-home">홈으로 돌아가기</button>
+
+            <div id="opinion-form">
+                <h3>댓글 작성</h3>
+                <textarea id="opinion-text" placeholder="댓글을 입력하세요..." rows="4"></textarea>
+                <button id="submit-opinion">댓글 제출</button>
+            </div>
+
+            <div id="all-comments">
+                <h3>전체 댓글</h3>
+                <div id="opinions">
+                    <!-- 의견 목록이 여기에 추가될 예정 -->
+                </div>
+            </div>
         </section>
     </main>
     <footer>
         <p>&copy; 2024 Writing Cat. All rights reserved.</p>
     </footer>
+
+    <script src="script.js"></script>
 </body>
 </html>
