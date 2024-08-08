@@ -1,3 +1,4 @@
+/* 기존 스타일 유지 */
 body {
     font-family: 'Arial', sans-serif;
     line-height: 1.6;
@@ -8,6 +9,7 @@ body {
     color: #333;
 }
 
+/* 헤더 스타일 */
 header {
     background-color: #fff;
     border-bottom: 1px solid #dbdbdb;
@@ -19,6 +21,7 @@ header {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+/* 네비게이션 스타일 */
 nav ul {
     list-style-type: none;
     padding: 0;
@@ -149,15 +152,20 @@ button:hover {
     font-size: 1.1em;
 }
 
+/* 주제 항목 스타일 */
 .topic-card ul li a {
-    text-decoration: none;
+    text-decoration: underline;
     color: #333;
     font-weight: bold;
     transition: color 0.3s;
+    font-size: 1.5em; /* 글자 크기 키우기 */
+    background-color: yellow; /* 강조 효과 */
+    padding: 5px;
 }
 
 .topic-card ul li a:hover {
     color: #0095f6;
+    background-color: #ffeb3b; /* 강조 효과 */
 }
 
 .opinion {

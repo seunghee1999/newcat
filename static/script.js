@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const topicTitleElement = document.getElementById('topic-title');
     const freeBoardSection = document.getElementById('free-board');
     const homeSection = document.getElementById('home');
+    const mainTopicTitle = document.getElementById('main-topic-title');
     const posts = JSON.parse(localStorage.getItem('posts')) || [];
     const topics = JSON.parse(localStorage.getItem('topics')) || [];
     const userOpinions = {};
@@ -42,12 +43,95 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 메인 주제 로드
     function loadMainTopics() {
-        const mainTopics = topics.filter(topic => topic.isMain);
+        fetchTopics();
+    }
+
+    // AI 기반 주제 가져오기 (서버에서 API로 주제를 받는다고 가정)
+    async function fetchTopics() {
+        try {
+            const response = await fetch('/api/topics'); // Flask 서버의 API
+            const topics = await response.json();
+            if (topics.length > 0) {
+                mainTopicTitle.innerHTML = `<a href="#">${topics[0].title}</a>`;
+                displayTopics(topics);
+            } else {
+                mainTopicTitle.textContent = 'No topics available';
+            }
+        } catch (error) {
+            console.error('Failed to fetch topics:', error);
+        }
+    }
+
+    // 주제 표시 함수
+    function displayTopics(topics) {
         mainTopicsList.innerHTML = '';
-        mainTopics.forEach(topic => {
-            const topicElement = createTopicElement(topic);
-            mainTopicsList.appendChild(topicElement);
+        topics.forEach(topic => {
+            const listItem = document.createElement('li');
+            listItem.innerHTML = `<a href="#">${topic.title}: ${topic.words}</a>`;
+            mainTopicsList.appendChild(listItem);
+
+            listItem.addEventListener('click', () => {
+                viewTopicDetail(topic);
+            });
         });
+    }
+
+    // 주제 상세보기 함수
+    function viewTopicDetail(topic) {
+        currentTopic = topic;
+        homeSection.style.display = 'none';
+        topicDetailSection.style.display = 'block';
+
+        topicTitleElement.textContent = topic.title;
+        opinionsDiv.innerHTML = '';
+
+        // 댓글 로드
+        const opinions = JSON.parse(localStorage.getItem(topic.title)) || [];
+        opinions.forEach(opinion => {
+            const opinionElement = createOpinionElement(opinion);
+            opinionsDiv.appendChild(opinionElement);
+        });
+    }
+
+    // 댓글 제출 기능
+    submitOpinionButton.addEventListener('click', () => {
+        const opinionValue = opinionText.value.trim();
+        if (opinionValue === '') {
+            alert('댓글을 입력하세요.');
+            return;
+        }
+
+        const newOpinion = {
+            text: opinionValue,
+            author: '사용자', // 여기에 실제 사용자 이름 또는 ID를 사용
+            likes: 0,
+            dislikes: 0,
+        };
+
+        const opinions = JSON.parse(localStorage.getItem(currentTopic.title)) || [];
+        opinions.push(newOpinion);
+        localStorage.setItem(currentTopic.title, JSON.stringify(opinions));
+
+        const opinionElement = createOpinionElement(newOpinion);
+        opinionsDiv.appendChild(opinionElement);
+        opinionText.value = '';
+    });
+
+    // 의견 요소 생성
+    function createOpinionElement(opinion) {
+        const opinionElement = document.createElement('div');
+        opinionElement.classList.add('opinion');
+
+        opinionElement.innerHTML = `
+            <p>${opinion.text}</p>
+            <p>작성자: ${opinion.author}</p>
+            <button class="like-button">👍 좋아요</button>
+            <button class="dislike-button">👎 싫어요</button>
+            <span class="like-count">${opinion.likes}</span> | 
+            <span class="dislike-count">${opinion.dislikes}</span>
+        `;
+
+        return opinionElement;
     }
 
     // 베스트 토픽 로드
