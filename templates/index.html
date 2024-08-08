@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>커뮤니티 홈페이지</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script defer src="{{ url_for('static', filename='script.js') }}"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="#home"><i class="fas fa-home"></i> Home</a></li>
+                <li><a href="#topics"><i class="fas fa-comments"></i> Topics</a></li>
+                <li><a href="#news"><i class="fas fa-newspaper"></i> News</a></li>
+                <li><a href="#events"><i class="fas fa-calendar-alt"></i> Events</a></li>
+                <li><a href="#notifications"><i class="fas fa-bell"></i> Notifications</a></li>
+                <li><a href="#profile"><i class="fas fa-user"></i> Profile</a></li>
+                <li><a href="#ranking"><i class="fas fa-trophy"></i> Ranking</a></li>
+                <li><a href="#guidelines"><i class="fas fa-book"></i> Guidelines</a></li>
+                <li><a href="#support"><i class="fas fa-headset"></i> Support</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <!-- 메인 주제 섹션 -->
+        <section id="home" class="page-section">
+            <h2>오늘의 주제: Writing Cat's Community</h2>
+            <p>오늘의 주제에 대해 토론하고 의견을 나누세요!</p>
+            <div class="topic-card">
+                <h3>오늘의 뜨거운 주제</h3>
+                <ul id="main-topics">
+                    <!-- 주제 항목이 여기에 추가됩니다 -->
+                </ul>
+            </div>
+            <button id="new-post-button" class="btn-primary">글 쓰기</button>
+        </section>
+
+        <!-- 일간, 주간, 월간 베스트 섹션 -->
+        <section id="best-topics" class="page-section">
+            <h2>베스트 토픽</h2>
+            <div class="card-container">
+                <div class="card">
+                    <h3>일간 베스트</h3>
+                    <ul id="daily-best">
+                        <!-- 일간 베스트 항목이 여기에 추가됩니다 -->
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>주간 베스트</h3>
+                    <ul id="weekly-best">
+                        <!-- 주간 베스트 항목이 여기에 추가됩니다 -->
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>월간 베스트</h3>
+                    <ul id="monthly-best">
+                        <!-- 월간 베스트 항목이 여기에 추가됩니다 -->
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- 자유게시판 -->
+        <section id="free-board" class="page-section">
+            <h2>자유게시판</h2>
+            <!-- 글쓰기 버튼 -->
+            <button id="freeboard-new-post-button" class="btn-primary">글 쓰기</button>
+
+            <!-- 글쓰기 폼 -->
+            <div id="post-form" class="card" style="display: none;">
+                <h3>새 글 작성</h3>
+                <label for="post-title">제목:</label>
+                <input type="text" id="post-title" required>
+                <button id="submit-post" class="btn-primary">등록</button>
+            </div>
+
+            <!-- 게시글 목록 -->
+            <div id="post-list" class="card-container">
+                <!-- 게시글 카드가 여기에 추가됩니다 -->
+            </div>
+        </section>
+
+        <!-- 주제 상세 페이지 -->
+        <section id="topic-detail" class="page-section" style="display: none;">
+            <h2 id="topic-title"></h2>
+            <button id="back-to-home" class="btn-secondary">홈으로 돌아가기</button>
+
+            <div id="opinion-form">
+                <h3>댓글 작성</h3>
+                <textarea id="opinion-text" placeholder="댓글을 입력하세요..." rows="4"></textarea>
+                <button id="submit-opinion" class="btn-primary">댓글 제출</button>
+            </div>
+
+            <div id="all-comments">
+                <h3>전체 댓글</h3>
+                <div id="opinions">
+                    <!-- 의견 목록이 여기에 추가될 예정 -->
+                </div>
+            </div>
+        </section>
+
+        <!-- 기타 섹션들 -->
+        <section id="topics" class="page-section">
+            <h2>Topics</h2>
+            <p>다양한 주제에 대해 토론하세요.</p>
+            <!-- 주제 목록이 여기에 표시됩니다 -->
+        </section>
+
+        <section id="news" class="page-section">
+            <h2>News</h2>
+            <p>최신 뉴스 및 트렌드를 확인하세요.</p>
+            <!-- 뉴스 기사 목록이 여기에 표시됩니다 -->
+        </section>
+
+        <section id="events" class="page-section">
+            <h2>Events</h2>
+            <p>커뮤니티 이벤트 및 챌린지에 참여하세요.</p>
+            <!-- 이벤트 정보가 여기에 표시됩니다 -->
+        </section>
+
+        <section id="notifications" class="page-section">
+            <h2>Notifications</h2>
+            <p>알림을 확인하세요.</p>
+            <!-- 알림 목록이 여기에 표시됩니다 -->
+        </section>
+
+        <section id="profile" class="page-section">
+            <h2>Profile</h2>
+            <p>프로필 설정을 관리하세요.</p>
+            <!-- 프로필 관리 기능이 여기에 구현됩니다 -->
+        </section>
+
+        <section id="ranking" class="page-section">
+            <h2>Ranking</h2>
+            <p>커뮤니티 랭킹을 확인하세요.</p>
+            <!-- 랭킹 정보가 여기에 표시됩니다 -->
+        </section>
+
+        <section id="guidelines" class="page-section">
+            <h2>Guidelines</h2>
+            <p>커뮤니티 규칙을 읽어보세요.</p>
+            <!-- 커뮤니티 규칙이 여기에 표시됩니다 -->
+        </section>
+
+        <section id="support" class="page-section">
+            <h2>Support</h2>
+            <p>도움을 받거나 피드백을 제공하세요.</p>
+            <!-- 고객 지원 기능이 여기에 구현됩니다 -->
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2024 Writing Cat. All rights reserved.</p>
+    </footer>
+
+    <script src="static/script.js"></script>
+</body>
+</html>
